@@ -1,5 +1,6 @@
 package com.yalemang.library.android;
 
+import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,14 @@ public class ViewUtils {
     }
 
     public static void viewTree(View view) {
+        if (view instanceof ViewGroup) {
+            viewGroupTreeMessage(view);
+        } else {
+            viewTreeMessage(view);
+        }
+    }
+
+    private static void viewTreeMessage(View view) {
         List<View> viewList = new ArrayList<>();
         ViewParent viewParent = view.getParent();
         viewList.add(view);
@@ -52,8 +61,25 @@ public class ViewUtils {
             for (int j = 0; j < viewList.size() - i; j++) {
                 line = line + "--";
             }
-            Log.d("Ellen2018",line + viewList.get(i).getClass().getName());
+            Log.d("Ellen2018", line + viewList.get(i).getClass().getName());
         }
+    }
+
+    private static void viewGroupTreeMessage(View view) {
+        ViewGroup viewGroup = (ViewGroup) view;
+        int childCount = viewGroup.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View currentView = viewGroup.getChildAt(i);
+            if (currentView instanceof ViewGroup) {
+                viewGroupTreeMessage(currentView);
+            } else {
+                Log.d("Ellen2018", currentView.getClass().getName());
+            }
+        }
+    }
+
+    public static void activityViewTree(Activity activity) {
+        viewTree(activity.findViewById(android.R.id.content));
     }
 
 }

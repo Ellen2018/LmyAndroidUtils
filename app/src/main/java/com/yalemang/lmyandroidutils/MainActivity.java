@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.tv);
-        int hierarchy = ViewUtils.getViewHierarchy(tv).getXmlViewHierarchy();
-        Log.d("Ellen2018","tv视图的层级为:"+hierarchy);
-        ViewUtils.viewTree(tv);
+        ViewUtils.activityViewTree(this);
     }
 }
