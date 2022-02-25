@@ -14,4 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <Button
+        android:id="@+id/tv2"
+        android:text="测试"
+        android:textSize="40sp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </RelativeLayout>

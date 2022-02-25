@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.yalemang.library.android.bean.ViewMessage;
+import com.yalemang.library.android.bean.ViewTree;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -40,7 +42,19 @@ public class ViewUtils {
 
     public static void viewTree(View view) {
         if (view instanceof ViewGroup) {
-            viewGroupTreeMessage(view);
+            HashMap<Integer, List<ViewTree>> viewHashMap = viewGroupTreeMessage(0, 0,view);
+            for (int i = 0; i < viewHashMap.size(); i++) {
+                List<ViewTree> viewList = viewHashMap.get(i);
+                for (ViewTree viewTree : viewList) {
+                    Log.d("Ellen2018", "父亲级别:" + viewTree.getParentLevel());
+                    Log.d("Ellen2018", "父亲:" + viewTree.getParentView().getClass().getName());
+                    Log.d("Ellen2018", "父亲在上级中的位置:" + viewTree.getParentPosition());
+                    Log.d("Ellen2018", "当前视图:"+viewTree.getView().getClass().getName());
+                    Log.d("Ellen2018", "当前视图级别:"+viewTree.getLevel());
+                    Log.d("Ellen2018", "当前视图在父视图中的位置:"+viewTree.getPosition());
+                    Log.d("Ellen2018", "--------------------------------------------------");
+                }
+            }
         } else {
             viewTreeMessage(view);
         }
@@ -65,21 +79,61 @@ public class ViewUtils {
         }
     }
 
-    private static void viewGroupTreeMessage(View view) {
+    /**
+     * 递归实现
+     *
+     * @param level
+     * @param view
+     */
+    private static HashMap<Integer, List<ViewTree>> viewGroupTreeMessage(int level, int parentPosition,View view) {
+        HashMap<Integer, List<ViewTree>> viewHashMap = new HashMap<>();
         ViewGroup viewGroup = (ViewGroup) view;
         int childCount = viewGroup.getChildCount();
+        if (viewHashMap.get(level) == null) {
+            viewHashMap.put(level, new ArrayList<>());
+        }
         for (int i = 0; i < childCount; i++) {
             View currentView = viewGroup.getChildAt(i);
             if (currentView instanceof ViewGroup) {
-                viewGroupTreeMessage(currentView);
+                //ViewGroup
+                int otherLevel = level + 1;
+                ViewTree viewTree = new ViewTree();
+                viewTree.setLevel(otherLevel);
+                viewTree.setParentLevel(level);
+                viewTree.setParentView(view);
+                viewTree.setView(currentView);
+                viewTree.setParentPosition(parentPosition);
+                viewTree.setPosition(i);
+                viewHashMap.get(level).add(viewTree);
+                HashMap<Integer, List<ViewTree>> hashMap = viewGroupTreeMessage(otherLevel,i, currentView);
+                for (int j : hashMap.keySet()) {
+                    if (viewHashMap.containsKey(j)) {
+                        viewHashMap.get(j).addAll(hashMap.get(j));
+                    } else {
+                        viewHashMap.put(j, hashMap.get(j));
+                    }
+                }
             } else {
-                Log.d("Ellen2018", currentView.getClass().getName());
+                //非ViewGroup
+                ViewTree viewTree = new ViewTree();
+                viewTree.setLevel(level + 1);
+                viewTree.setParentLevel(level);
+                viewTree.setParentView(view);
+                viewTree.setPosition(i);
+                viewTree.setParentPosition(parentPosition);
+                viewTree.setView(currentView);
+                viewHashMap.get(level).add(viewTree);
             }
         }
+        return viewHashMap;
     }
 
     public static void activityViewTree(Activity activity) {
-        viewTree(activity.findViewById(android.R.id.content));
+        View view = activity.findViewById(android.R.id.content);
+        while (view.getParent() != null) {
+            view = (View) view.getParent();
+        }
+        viewTree(view);
     }
 
 }
