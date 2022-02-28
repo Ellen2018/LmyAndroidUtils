@@ -1,6 +1,8 @@
 package com.yalemang.library.android.viewutils;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -13,7 +15,7 @@ public class ViewTreeDialog {
 
     public void show(Context context){
         bottomSheetDialog = new BottomSheetDialog(context);
-        contentView = View.inflate(context, R.layout.dialog_view_tree,null);
+        contentView = LayoutInflater.from(context).inflate(R.layout.dialog_view_tree,null,false);
         bottomSheetDialog.setContentView(contentView);
         bottomSheetDialog.show();
     }

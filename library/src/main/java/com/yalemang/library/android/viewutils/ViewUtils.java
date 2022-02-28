@@ -1,6 +1,7 @@
 package com.yalemang.library.android.viewutils;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -41,6 +42,9 @@ public class ViewUtils {
             ViewParent viewParent = view.getParent();
             if(viewParent instanceof View){
                 view = (View) viewParent;
+            }
+            if(!(view.getParent() instanceof View)){
+                break;
             }
         }
         ViewGroup rootViewGroup = (ViewGroup) view;

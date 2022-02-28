@@ -4,11 +4,20 @@
     android:background="#ffffff"
     android:layout_height="match_parent">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:text="ViewTree查看"
-        android:gravity="center"
-        android:textSize="40sp"
-        android:layout_height="match_parent"/>
+        android:background="#ffffff"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="ViewTree查看"
+            android:gravity="center"
+            android:textSize="40sp"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+
+
 
 </RelativeLayout>
