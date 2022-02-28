@@ -2,13 +2,25 @@ package com.yalemang.library.android.bean;
 
 import android.view.View;
 
+import java.util.Arrays;
+
 public class ViewTree {
     private int level;
-    private int parentLevel;
     private View view;
-    private int parentPosition;
-    private View parentView;
     private int position;
+    private ViewTree parent;
+    private ViewTree[] children;
+
+    @Override
+    public String toString() {
+        return "ViewTree{" +
+                "level=" + level +
+                ", view=" + view +
+                ", position=" + position +
+                ", parent=" + parent +
+                ", children=" + Arrays.toString(children) +
+                '}';
+    }
 
     public ViewTree(){}
 
@@ -28,32 +40,24 @@ public class ViewTree {
         this.view = view;
     }
 
-    public View getParentView() {
-        return parentView;
+    public ViewTree[] getChildren() {
+        return children;
     }
 
-    public void setParentView(View parentView) {
-        this.parentView = parentView;
-    }
-
-    public int getParentLevel() {
-        return parentLevel;
-    }
-
-    public void setParentLevel(int parentLevel) {
-        this.parentLevel = parentLevel;
-    }
-
-    public int getParentPosition() {
-        return parentPosition;
-    }
-
-    public void setParentPosition(int parentPosition) {
-        this.parentPosition = parentPosition;
+    public void setChildren(ViewTree[] children) {
+        this.children = children;
     }
 
     public int getPosition() {
         return position;
+    }
+
+    public ViewTree getParent() {
+        return parent;
+    }
+
+    public void setParent(ViewTree parent) {
+        this.parent = parent;
     }
 
     public void setPosition(int position) {

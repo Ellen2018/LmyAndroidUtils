@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewStub;
 
 import com.yalemang.library.android.bean.ViewMessage;
 import com.yalemang.library.android.bean.ViewTree;
@@ -46,12 +47,12 @@ public class ViewUtils {
             for (int i = 0; i < viewHashMap.size(); i++) {
                 List<ViewTree> viewList = viewHashMap.get(i);
                 for (ViewTree viewTree : viewList) {
-                    Log.d("Ellen2018", "父亲级别:" + viewTree.getParentLevel());
-                    Log.d("Ellen2018", "父亲:" + viewTree.getParentView().getClass().getName());
-                    Log.d("Ellen2018", "父亲在上级中的位置:" + viewTree.getParentPosition());
-                    Log.d("Ellen2018", "当前视图:"+viewTree.getView().getClass().getName());
-                    Log.d("Ellen2018", "当前视图级别:"+viewTree.getLevel());
-                    Log.d("Ellen2018", "当前视图在父视图中的位置:"+viewTree.getPosition());
+                    Log.d("Ellen2018", "父亲级别:" + viewTree.getParent().getLevel());
+                    Log.d("Ellen2018", "父亲:" + viewTree.getParent().getView().getClass().getName());
+                    Log.d("Ellen2018", "父亲在上级中的位置:" + viewTree.getParent().getPosition());
+                    Log.d("Ellen2018", "当前视图:" + viewTree.getView().getClass().getName());
+                    Log.d("Ellen2018", "当前视图级别:" + viewTree.getLevel());
+                    Log.d("Ellen2018", "当前视图在父视图中的位置:" + viewTree.getPosition());
                     Log.d("Ellen2018", "--------------------------------------------------");
                 }
             }
@@ -98,14 +99,16 @@ public class ViewUtils {
                 //ViewGroup
                 int otherLevel = level + 1;
                 ViewTree viewTree = new ViewTree();
+                ViewTree parent = new ViewTree();
                 viewTree.setLevel(otherLevel);
-                viewTree.setParentLevel(level);
-                viewTree.setParentView(view);
+                parent.setLevel(level);
+                parent.setView(view);
                 viewTree.setView(currentView);
-                viewTree.setParentPosition(parentPosition);
+                parent.setPosition(parentPosition);
                 viewTree.setPosition(i);
+                viewTree.setParent(parent);
                 viewHashMap.get(level).add(viewTree);
-                HashMap<Integer, List<ViewTree>> hashMap = viewGroupTreeMessage(otherLevel,i, currentView);
+                HashMap<Integer, List<ViewTree>> hashMap = viewGroupTreeMessage(otherLevel, i, currentView);
                 for (int j : hashMap.keySet()) {
                     if (viewHashMap.containsKey(j)) {
                         viewHashMap.get(j).addAll(hashMap.get(j));
@@ -116,12 +119,14 @@ public class ViewUtils {
             } else {
                 //非ViewGroup
                 ViewTree viewTree = new ViewTree();
+                ViewTree parent = new ViewTree();
                 viewTree.setLevel(level + 1);
-                viewTree.setParentLevel(level);
-                viewTree.setParentView(view);
+                parent.setLevel(level);
+                parent.setView(view);
                 viewTree.setPosition(i);
-                viewTree.setParentPosition(parentPosition);
+                parent.setPosition(parentPosition);
                 viewTree.setView(currentView);
+                viewTree.setParent(parent);
                 viewHashMap.get(level).add(viewTree);
             }
         }
@@ -133,7 +138,32 @@ public class ViewUtils {
         while (view.getParent() != null) {
             view = (View) view.getParent();
         }
-        viewTree(view);
+        ViewGroup rootViewGroup = (ViewGroup) view;
+        ViewTree rootViewTree = new ViewTree();
+        rootViewTree.setView(view);
+        rootViewTree.setPosition(0);
+        rootViewTree.setLevel(0);
+        ViewTree[] viewTrees = new ViewTree[rootViewGroup.getChildCount()];
+        rootViewTree.setChildren(viewTrees);
+        viewGroupTree(rootViewTree);
+    }
+
+    private static void viewGroupTree(ViewTree viewTree) {
+        ViewGroup viewGroup = (ViewGroup) viewTree.getView();
+        for (int i = 0; i < viewTree.getChildren().length; i++) {
+            View view = viewGroup.getChildAt(i);
+            ViewTree childViewTree = new ViewTree();
+            childViewTree.setPosition(i);
+            childViewTree.setView(view);
+            childViewTree.setLevel(viewTree.getLevel() + 1);
+            viewTree.getChildren()[i] = childViewTree;
+            if (view instanceof ViewGroup) {
+                ViewGroup childViewGroup = (ViewGroup) view;
+                ViewTree[] viewTrees = new ViewTree[childViewGroup.getChildCount()];
+                childViewTree.setChildren(viewTrees);
+                viewGroupTree(childViewTree);
+            }
+        }
     }
 
 }
