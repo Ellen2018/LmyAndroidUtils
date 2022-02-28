@@ -2,24 +2,12 @@ package com.yalemang.lmyandroidutils;
 
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
+import com.yalemang.library.android.viewutils.ViewUtils;
+
 import android.view.View;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
-import com.yalemang.library.android.ViewUtils;
-import com.yalemang.lmyandroidutils.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.tv);
-        ViewUtils.activityViewTree(this);
+        findViewById(R.id.tv2).setOnClickListener(v -> {
+            ViewUtils.activityViewTree(this);
+        });
     }
 }

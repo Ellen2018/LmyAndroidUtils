@@ -1,4 +1,4 @@
-package com.yalemang.library.android.bean;
+package com.yalemang.library.android.viewutils.bean;
 
 public class ViewMessage {
     //视图布局中层级

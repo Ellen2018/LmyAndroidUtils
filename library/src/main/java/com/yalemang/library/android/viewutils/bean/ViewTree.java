@@ -1,4 +1,4 @@
-package com.yalemang.library.android.bean;
+package com.yalemang.library.android.viewutils.bean;
 
 import android.view.View;
 
