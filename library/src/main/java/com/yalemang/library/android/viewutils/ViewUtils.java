@@ -1,6 +1,7 @@
 package com.yalemang.library.android.viewutils;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -14,46 +15,24 @@ public class ViewUtils {
 
     public static void viewTree(View view) {
         Activity activity = (Activity) view.getContext();
-        ViewTree activityViewTree = getActivityViewTree(activity);
-        ViewTree targetViewTree = findViewTree(activityViewTree,view);
-        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity, targetViewTree.getParent(), targetViewTree);
+        FindViewTree findViewTree = getActivityViewTree(activity,view);
+        ViewTree showViewTree = findViewTree.getTargetViewTree().getParent();
+        ViewTree targetViewTree = findViewTree.getTargetViewTree();
+        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity, showViewTree, targetViewTree);
         viewTreeDialog.show();
     }
 
-
-    private static ViewTree findViewTree(ViewTree viewTree, View view) {
-        ViewTree targetViewTree = null;
-        if (viewTree.getView().equals(view)) {
-            targetViewTree = viewTree;
-        } else {
-            if (viewTree.getChildren() != null) {
-                for (ViewTree vt : viewTree.getChildren()) {
-                    if (vt.getView().equals(view)) {
-                        targetViewTree = vt;
-                        break;
-                    }
-                }
-                if (targetViewTree == null) {
-                    for (ViewTree vt : viewTree.getChildren()) {
-                        if(vt.getView() instanceof ViewGroup){
-                            targetViewTree = findViewTree(vt,view);
-                        }
-                    }
-                }
-            }
-        }
-        return targetViewTree;
-    }
-
-    public static ViewTree activityViewTree(Activity activity) {
-        ViewTree rootViewTree = getActivityViewTree(activity);
+    public static ViewTree viewTree(Activity activity) {
+        FindViewTree findViewTree = getActivityViewTree(activity,null);
         //跳转到视图显示界面
-        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity, rootViewTree, rootViewTree);
+        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity, findViewTree.getRootViewTree(), findViewTree.getRootViewTree());
         viewTreeDialog.show();
-        return rootViewTree;
+        return findViewTree.getRootViewTree();
     }
 
-    private static ViewTree getActivityViewTree(Activity activity) {
+    private static FindViewTree getActivityViewTree(Activity activity,View targetView) {
+        FindViewTree findViewTree = new FindViewTree();
+        findViewTree.setTargetView(targetView);
         View view = activity.findViewById(android.R.id.content);
         while (view.getParent() != null) {
             ViewParent viewParent = view.getParent();
@@ -70,12 +49,16 @@ public class ViewUtils {
         rootViewTree.setLevel(0);
         rootViewTree.setParent(null);
         ViewTree[] viewTrees = new ViewTree[1];
+        findViewTree.setRootViewTree(rootViewTree);
+        if(findViewTree.getTargetView() == null){
+            findViewTree.setTargetView(view);
+        }
         rootViewTree.setChildren(viewTrees);
-        viewGroupTree(rootViewTree);
-        return rootViewTree;
+        viewGroupTree(rootViewTree,findViewTree);
+        return findViewTree;
     }
 
-    private static void viewGroupTree(ViewTree viewTree) {
+    private static void viewGroupTree(ViewTree viewTree,FindViewTree findViewTree) {
         ViewGroup viewGroup = (ViewGroup) viewTree.getView();
         for (int i = 0; i < viewTree.getChildren().length; i++) {
             View view = viewGroup.getChildAt(i);
@@ -90,12 +73,45 @@ public class ViewUtils {
             childViewTree.setParent(viewTree);
             childViewTree.setLevel(viewTree.getLevel() + 1);
             viewTree.getChildren()[i] = childViewTree;
+            if(findViewTree.getTargetView().equals(view)){
+                findViewTree.setTargetViewTree(childViewTree);
+            }
             if (view instanceof ViewGroup) {
                 ViewGroup childViewGroup = (ViewGroup) view;
                 ViewTree[] viewTrees = new ViewTree[childViewGroup.getChildCount()];
                 childViewTree.setChildren(viewTrees);
-                viewGroupTree(childViewTree);
+                viewGroupTree(childViewTree,findViewTree);
             }
+        }
+    }
+
+    private static class FindViewTree{
+        private ViewTree rootViewTree;
+        private ViewTree targetViewTree;
+        private View targetView;
+
+        public View getTargetView() {
+            return targetView;
+        }
+
+        public void setTargetView(View targetView) {
+            this.targetView = targetView;
+        }
+
+        public ViewTree getRootViewTree() {
+            return rootViewTree;
+        }
+
+        public void setRootViewTree(ViewTree rootViewTree) {
+            this.rootViewTree = rootViewTree;
+        }
+
+        public ViewTree getTargetViewTree() {
+            return targetViewTree;
+        }
+
+        public void setTargetViewTree(ViewTree targetViewTree) {
+            this.targetViewTree = targetViewTree;
         }
     }
 
