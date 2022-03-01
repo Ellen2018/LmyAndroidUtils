@@ -1,12 +1,10 @@
 package com.yalemang.library.android.viewutils;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import com.yalemang.library.android.viewutils.bean.ViewMessage;
 import com.yalemang.library.android.viewutils.bean.ViewTree;
 
 /**
@@ -14,40 +12,58 @@ import com.yalemang.library.android.viewutils.bean.ViewTree;
  */
 public class ViewUtils {
 
-    /**
-     * 获取视图层级
-     *
-     * @param view
-     * @return
-     */
-    public static ViewMessage getViewHierarchy(View view) {
-        ViewMessage viewMessage = new ViewMessage();
-        int hierarchy = 1;
-        if (view.getParent() != null) {
-            View targetView = view;
-            ViewParent viewParent = targetView.getParent();
-            while (viewParent != null) {
-                hierarchy++;
-                viewParent = viewParent.getParent();
-            }
-        }
-        viewMessage.setSystemViewHierarchy(hierarchy);
-        viewMessage.setXmlViewHierarchy(hierarchy - 6);
-        return viewMessage;
+    public static void viewTree(View view) {
+        Activity activity = (Activity) view.getContext();
+        ViewTree activityViewTree = getActivityViewTree(activity);
+        ViewTree targetViewTree = findViewTree(activityViewTree,view);
+        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity, targetViewTree.getParent(), targetViewTree);
+        viewTreeDialog.show();
     }
 
-    public static void activityViewTree(Activity activity) {
+
+    private static ViewTree findViewTree(ViewTree viewTree, View view) {
+        ViewTree targetViewTree = null;
+        if (viewTree.getView().equals(view)) {
+            targetViewTree = viewTree;
+        } else {
+            if (viewTree.getChildren() != null) {
+                for (ViewTree vt : viewTree.getChildren()) {
+                    if (vt.getView().equals(view)) {
+                        targetViewTree = vt;
+                        break;
+                    }
+                }
+                if (targetViewTree == null) {
+                    for (ViewTree vt : viewTree.getChildren()) {
+                        if(vt.getView() instanceof ViewGroup){
+                            targetViewTree = findViewTree(vt,view);
+                        }
+                    }
+                }
+            }
+        }
+        return targetViewTree;
+    }
+
+    public static ViewTree activityViewTree(Activity activity) {
+        ViewTree rootViewTree = getActivityViewTree(activity);
+        //跳转到视图显示界面
+        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity, rootViewTree, rootViewTree);
+        viewTreeDialog.show();
+        return rootViewTree;
+    }
+
+    private static ViewTree getActivityViewTree(Activity activity) {
         View view = activity.findViewById(android.R.id.content);
         while (view.getParent() != null) {
             ViewParent viewParent = view.getParent();
-            if(viewParent instanceof View){
+            if (viewParent instanceof View) {
                 view = (View) viewParent;
             }
-            if(!(view.getParent() instanceof View)){
+            if (!(view.getParent() instanceof View)) {
                 break;
             }
         }
-        ViewGroup rootViewGroup = (ViewGroup) view;
         ViewTree rootViewTree = new ViewTree();
         rootViewTree.setView(view);
         rootViewTree.setPosition(0);
@@ -56,10 +72,7 @@ public class ViewUtils {
         ViewTree[] viewTrees = new ViewTree[1];
         rootViewTree.setChildren(viewTrees);
         viewGroupTree(rootViewTree);
-
-        //跳转到视图显示界面
-        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity,rootViewTree);
-        viewTreeDialog.show();
+        return rootViewTree;
     }
 
     private static void viewGroupTree(ViewTree viewTree) {

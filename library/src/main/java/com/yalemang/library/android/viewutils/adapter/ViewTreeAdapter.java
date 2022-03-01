@@ -1,5 +1,6 @@
 package com.yalemang.library.android.viewutils.adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,14 @@ public class ViewTreeAdapter extends RecyclerView.Adapter<ViewTreeAdapter.ViewTr
 
     private ViewTree[] viewTrees;
     private OnItemClick onItemClick;
+    private ViewTree targetViewTree;
 
     public ViewTree[] getViewTrees() {
         return viewTrees;
+    }
+
+    public void setTargetViewTree(ViewTree targetViewTree) {
+        this.targetViewTree = targetViewTree;
     }
 
     public void setOnItemClick(OnItemClick onItemClick) {
@@ -51,6 +57,21 @@ public class ViewTreeAdapter extends RecyclerView.Adapter<ViewTreeAdapter.ViewTr
             holder.tvType.setText("ViewStub");
         }else {
             holder.tvType.setText("View");
+        }
+        if(targetViewTree != null){
+            if(targetViewTree.getView().equals(viewTree.getView())){
+                holder.itemView.setBackgroundColor(Color.BLUE);
+                holder.tv.setTextColor(Color.WHITE);
+                holder.tvType.setTextColor(Color.WHITE);
+            }else {
+                holder.itemView.setBackgroundColor(Color.WHITE);
+                holder.tv.setTextColor(Color.BLACK);
+                holder.tvType.setTextColor(Color.BLACK);
+            }
+        }else {
+            holder.itemView.setBackgroundColor(Color.WHITE);
+            holder.tv.setTextColor(Color.BLACK);
+            holder.tvType.setTextColor(Color.BLACK);
         }
     }
 
