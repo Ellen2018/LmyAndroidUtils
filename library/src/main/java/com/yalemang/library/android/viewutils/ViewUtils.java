@@ -52,22 +52,29 @@ public class ViewUtils {
         rootViewTree.setView(view);
         rootViewTree.setPosition(0);
         rootViewTree.setLevel(0);
-        ViewTree[] viewTrees = new ViewTree[rootViewGroup.getChildCount()];
+        rootViewTree.setParent(null);
+        ViewTree[] viewTrees = new ViewTree[1];
         rootViewTree.setChildren(viewTrees);
         viewGroupTree(rootViewTree);
 
         //跳转到视图显示界面
-        ViewTreeDialog viewTreeDialog = new ViewTreeDialog();
-        viewTreeDialog.show(activity);
+        ViewTreeDialog viewTreeDialog = new ViewTreeDialog(activity,rootViewTree);
+        viewTreeDialog.show();
     }
 
     private static void viewGroupTree(ViewTree viewTree) {
         ViewGroup viewGroup = (ViewGroup) viewTree.getView();
         for (int i = 0; i < viewTree.getChildren().length; i++) {
             View view = viewGroup.getChildAt(i);
+            if(viewTree.getLevel() == 0){
+                if(!(view instanceof ViewGroup)){
+                    break;
+                }
+            }
             ViewTree childViewTree = new ViewTree();
             childViewTree.setPosition(i);
             childViewTree.setView(view);
+            childViewTree.setParent(viewTree);
             childViewTree.setLevel(viewTree.getLevel() + 1);
             viewTree.getChildren()[i] = childViewTree;
             if (view instanceof ViewGroup) {
