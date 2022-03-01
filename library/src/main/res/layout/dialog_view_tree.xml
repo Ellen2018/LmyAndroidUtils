@@ -71,13 +71,23 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/tv_error"
+            android:layout_width="match_parent"
+            android:background="#ff0000"
+            android:paddingStart="12dp"
+            android:textColor="#ffffff"
+            android:gravity="center_vertical"
+            android:layout_below="@id/rl_content"
+            android:text="危险!可能存在嵌套层级过多导致过度绘制"
+            android:layout_height="?actionBarSize"/>
 
         <View
             android:id="@+id/view_line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#2d2d2d"
-            android:layout_below="@id/rl_content" />
+            android:layout_below="@id/tv_error" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"

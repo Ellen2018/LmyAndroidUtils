@@ -18,10 +18,15 @@ public class ViewTreeAdapter extends RecyclerView.Adapter<ViewTreeAdapter.ViewTr
 
     private ViewTree[] viewTrees;
     private OnItemClick onItemClick;
+    private OnItemLongClick onItemLongClick;
     private ViewTree targetViewTree;
 
     public ViewTree[] getViewTrees() {
         return viewTrees;
+    }
+
+    public void setOnItemLongClick(OnItemLongClick onItemLongClick) {
+        this.onItemLongClick = onItemLongClick;
     }
 
     public void setTargetViewTree(ViewTree targetViewTree) {
@@ -49,6 +54,12 @@ public class ViewTreeAdapter extends RecyclerView.Adapter<ViewTreeAdapter.ViewTr
         holder.tv.setText(viewTree.getView().getClass().getName());
         if(onItemClick != null){
             holder.itemView.setOnClickListener(v -> onItemClick.clickItem(position));
+        }
+        if(onItemLongClick != null){
+            holder.itemView.setOnLongClickListener(v -> {
+                onItemLongClick.longClickItem(position);
+                return false;
+            });
         }
         View view = viewTree.getView();
         if(view instanceof ViewGroup){
@@ -93,5 +104,9 @@ public class ViewTreeAdapter extends RecyclerView.Adapter<ViewTreeAdapter.ViewTr
 
     public interface OnItemClick{
         void clickItem(int position);
+    }
+
+    public interface OnItemLongClick{
+        void longClickItem(int position);
     }
 }

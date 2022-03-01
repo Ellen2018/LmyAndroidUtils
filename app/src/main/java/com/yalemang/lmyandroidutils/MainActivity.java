@@ -16,16 +16,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private TextView tv;
-    private Button tv2;
+    private Button bt;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.tv);
-        tv2 = findViewById(R.id.tv2);
-        tv2.setOnClickListener(v -> {
-            ViewUtils.viewTree(tv2);
+        bt = findViewById(R.id.bt);
+        tv.setOnClickListener(v -> {
+            ViewUtils.viewTree(tv);
+        });
+        bt.setOnClickListener(v -> {
+            ViewUtils.viewTree(bt);
         });
     }
 }

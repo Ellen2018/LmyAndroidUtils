@@ -13,6 +13,8 @@ import com.yalemang.library.android.viewutils.bean.ViewTree;
  */
 public class ViewUtils {
 
+    public static int TARGET_VIEW_DEPTH = 4;
+
     public static void viewTree(View view) {
         Activity activity = (Activity) view.getContext();
         FindViewTree findViewTree = getActivityViewTree(activity,view);
